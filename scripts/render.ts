@@ -16,13 +16,15 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { loadSpec, ROOT } from "./lib/colors.ts";
-import { image } from "./lib/docker.ts";
-import { type Expect, expectPixels, hexAt, type Image, load } from "./lib/pixels.ts";
+import { loadSpec } from "@mistpine/port-kit";
+import { image } from "@mistpine/port-kit/docker";
+import { type Expect, expectPixels, hexAt, type Image, load } from "@mistpine/port-kit/pixels";
+
+const ROOT = join(import.meta.dirname, "..");
 
 const WORK = join(ROOT, ".render");
 const ASSETS = join(ROOT, "assets");
-const { spec } = await loadSpec();
+const { spec } = await loadSpec(ROOT);
 const ui = (name: string) => (spec.ui[name]?.hex ?? "").toLowerCase();
 const pal = (name: string) => (spec.palette[name] ?? "").toLowerCase();
 const CANVAS = ui("editorBg");
@@ -81,7 +83,12 @@ const uid = `${process.getuid?.() ?? 0}:${process.getgid?.() ?? 0}`;
 const failures: string[] = [];
 
 for (const release of ["26.04", "24.04"]) {
-  const tag = image(release);
+  const tag = image({
+    name: "mistpine-waybar",
+    release,
+    context: join(ROOT, "scripts", "render"),
+    hostUser: true,
+  });
   const out = join(WORK, release);
   mkdirSync(out, { recursive: true });
   override(out);

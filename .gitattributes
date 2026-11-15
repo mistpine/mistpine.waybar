@@ -1,6 +1,5 @@
 * text=auto eol=lf
 *.png binary
-*.ttf binary
 
 # Generated: review scripts/generate.ts and src/ instead.
 themes/** linguist-generated

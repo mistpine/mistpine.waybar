@@ -17,9 +17,11 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadSpec, ROOT } from "./lib/colors.ts";
-import { image } from "./lib/docker.ts";
-import { type Expect, expectPixels, load } from "./lib/pixels.ts";
+import { loadSpec } from "@mistpine/port-kit";
+import { image } from "@mistpine/port-kit/docker";
+import { type Expect, expectPixels, load } from "@mistpine/port-kit/pixels";
+
+const ROOT = join(import.meta.dirname, "..");
 
 const RELEASES = { "24.04": "0.9.24", "26.04": "0.15.0" } as const;
 type Release = keyof typeof RELEASES;
@@ -33,7 +35,7 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-const { spec } = await loadSpec();
+const { spec } = await loadSpec(ROOT);
 const ui = (name: string) =>
   (spec.ui[name]?.hex ?? fail(`the spec has no ui.${name}`)).toLowerCase();
 const pal = (name: string) => (spec.palette[name] ?? fail(`the spec has no ${name}`)).toLowerCase();
@@ -77,7 +79,12 @@ const EXPECT: Expect[] = [
 const NOISE = /RFKILL|SYSTEM Bus|org\.a11y\.Bus|portal\.Desktop|basic_string::_M_create/;
 
 for (const release of releases) {
-  const tag = image(release);
+  const tag = image({
+    name: "mistpine-waybar",
+    release,
+    context: join(ROOT, "scripts", "render"),
+    hostUser: true,
+  });
   const out = mkdtempSync(join(tmpdir(), "mistpine-waybar-verify-"));
   try {
     execFileSync(
