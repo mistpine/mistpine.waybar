@@ -13,6 +13,12 @@ export function image(release: string): string {
       "-q",
       "--build-arg",
       `BASE=ubuntu:${release}`,
+      // The containers run as the host's uid (so the files they write are
+      // yours), and D-Bus needs that uid to be a user in the image.
+      "--build-arg",
+      `UID=${process.getuid?.() ?? 0}`,
+      "--build-arg",
+      `GID=${process.getgid?.() ?? 0}`,
       "-t",
       tag,
       "-f",
