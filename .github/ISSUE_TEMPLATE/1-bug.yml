@@ -1,0 +1,46 @@
+# Filing through the API or `gh issue create`? Forms only apply on the web:
+# write the body with each field's label below as a `### ` heading, in order.
+name: Wrong or broken colors
+description: A color that differs from the spec, or Waybar rejecting the style.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        mistpine.waybar follows the [mistpine spec](https://github.com/mistpine/mistpine/blob/main/docs/spec.md).
+        A color that differs from the spec is a bug here; a spec color you'd like
+        changed belongs in [mistpine](https://github.com/mistpine/mistpine/issues/new/choose).
+  - type: textarea
+    id: what
+    attributes:
+      label: What's wrong
+      description: What you see, where (a module, a workspace state, a tooltip), and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag an image here.
+  - type: textarea
+    id: config
+    attributes:
+      label: Waybar config
+      description: "Your `config.jsonc` (or the modules you use), and any rules you added to `style.css`."
+      render: jsonc
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: "`waybar --version`, the compositor and its version, the distribution, and where the files came from (curl, a clone at some commit)."
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I'm using the latest `themes/` from main.
+          required: true
+        - label: "Waybar's log shows no CSS errors at start."
