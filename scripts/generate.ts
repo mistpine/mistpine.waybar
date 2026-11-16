@@ -12,16 +12,18 @@
  *   pnpm generate --check  fail if any file is out of date
  *
  * Every color comes from palette/mistpine.json in the reference repository
- * (see lib/colors.ts). Before anything is written, the sources may use
+ * (read by @mistpine/port-kit). Before anything is written, the sources may use
  * colors only by palette name, and every text color must clear 4.5:1 on the
  * background it sits on.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { contrast, loadSpec, mix, ROOT } from "./lib/colors.ts";
+import { contrast, loadSpec, mix } from "@mistpine/port-kit";
+
+const ROOT = join(import.meta.dirname, "..");
 
 const check = process.argv.includes("--check");
-const { spec, source } = await loadSpec();
+const { spec, source } = await loadSpec(ROOT);
 
 /** The CSS name for a palette key: `brightRed` → `bright-red`. */
 const cssName = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
